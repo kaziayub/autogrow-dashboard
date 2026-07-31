@@ -17,152 +17,235 @@ import type {
 // Client realtime subscriptions live in components/realtime.tsx + logs-stream.tsx.
 
 export async function getAgents(): Promise<AgentControl[]> {
-  const sb = await supabaseServer();
-  const { data } = await sb.from("agent_control").select("*").order("agent_name");
-  return data ?? [];
+  try {
+    const sb = await supabaseServer();
+    const { data } = await sb.from("agent_control").select("*").order("agent_name");
+    return data ?? [];
+  } catch (e) {
+    console.error("getAgents error:", e);
+    return [];
+  }
 }
 
 export async function getMissions(): Promise<Mission[]> {
-  const sb = await supabaseServer();
-  const { data } = await sb
-    .from("missions")
-    .select("*")
-    .order("created_at", { ascending: false });
-  return data ?? [];
+  try {
+    const sb = await supabaseServer();
+    const { data } = await sb
+      .from("missions")
+      .select("*")
+      .order("created_at", { ascending: false });
+    return data ?? [];
+  } catch (e) {
+    console.error("getMissions error:", e);
+    return [];
+  }
 }
 
 export async function getTasks(): Promise<Task[]> {
-  const sb = await supabaseServer();
-  const { data } = await sb
-    .from("tasks")
-    .select("*")
-    .order("created_at", { ascending: false });
-  return data ?? [];
+  try {
+    const sb = await supabaseServer();
+    const { data } = await sb
+      .from("tasks")
+      .select("*")
+      .order("created_at", { ascending: false });
+    return data ?? [];
+  } catch (e) {
+    console.error("getTasks error:", e);
+    return [];
+  }
 }
 
 export async function getMemories(): Promise<Memory[]> {
-  const sb = await supabaseServer();
-  const { data } = await sb
-    .from("memory")
-    .select("*")
-    .order("created_at", { ascending: false });
-  return data ?? [];
+  try {
+    const sb = await supabaseServer();
+    const { data } = await sb
+      .from("memory")
+      .select("*")
+      .order("created_at", { ascending: false });
+    return data ?? [];
+  } catch (e) {
+    console.error("getMemories error:", e);
+    return [];
+  }
 }
 
 export async function getOpportunities(): Promise<Opportunity[]> {
-  const sb = await supabaseServer();
-  const { data } = await sb
-    .from("opportunities")
-    .select("*")
-    .order("created_at", { ascending: false });
-  return data ?? [];
+  try {
+    const sb = await supabaseServer();
+    const { data } = await sb
+      .from("opportunities")
+      .select("*")
+      .order("created_at", { ascending: false });
+    return data ?? [];
+  } catch (e) {
+    console.error("getOpportunities error:", e);
+    return [];
+  }
 }
 
 export async function getApprovals(): Promise<Approval[]> {
-  const sb = await supabaseServer();
-  const { data } = await sb
-    .from("approvals")
-    .select("*")
-    .order("created_at", { ascending: false });
-  return data ?? [];
+  try {
+    const sb = await supabaseServer();
+    const { data } = await sb
+      .from("approvals")
+      .select("*")
+      .order("created_at", { ascending: false });
+    return data ?? [];
+  } catch (e) {
+    console.error("getApprovals error:", e);
+    return [];
+  }
 }
 
 export async function getSchedulerJobs(): Promise<SchedulerJob[]> {
-  const sb = await supabaseServer();
-  const { data } = await sb
-    .from("scheduler")
-    .select("*")
-    .order("job_type")
-    .order("job_name");
-  return data ?? [];
+  try {
+    const sb = await supabaseServer();
+    const { data } = await sb
+      .from("scheduler")
+      .select("*")
+      .order("job_type")
+      .order("job_name");
+    return data ?? [];
+  } catch (e) {
+    console.error("getSchedulerJobs error:", e);
+    return [];
+  }
 }
 
 export async function getSeoAudits(): Promise<SeoAudit[]> {
-  const sb = await supabaseServer();
-  const { data } = await sb
-    .from("seo_audits")
-    .select("*")
-    .order("created_at", { ascending: false })
-    .limit(50);
-  return data ?? [];
+  try {
+    const sb = await supabaseServer();
+    const { data } = await sb
+      .from("seo_audits")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(50);
+    return data ?? [];
+  } catch (e) {
+    console.error("getSeoAudits error:", e);
+    return [];
+  }
 }
 
 export async function getContentDrafts(): Promise<ContentDraft[]> {
-  const sb = await supabaseServer();
-  const { data } = await sb
-    .from("content_drafts")
-    .select("*")
-    .order("created_at", { ascending: false });
-  return data ?? [];
+  try {
+    const sb = await supabaseServer();
+    const { data } = await sb
+      .from("content_drafts")
+      .select("*")
+      .order("created_at", { ascending: false });
+    return data ?? [];
+  } catch (e) {
+    console.error("getContentDrafts error:", e);
+    return [];
+  }
 }
 
 export async function getResearchReports(): Promise<ResearchReport[]> {
-  const sb = await supabaseServer();
-  const { data } = await sb
-    .from("research_reports")
-    .select("*")
-    .order("created_at", { ascending: false });
-  return data ?? [];
+  try {
+    const sb = await supabaseServer();
+    const { data } = await sb
+      .from("research_reports")
+      .select("*")
+      .order("created_at", { ascending: false });
+    return data ?? [];
+  } catch (e) {
+    console.error("getResearchReports error:", e);
+    return [];
+  }
 }
 
 export async function getRecentLogs(limit = 50): Promise<LogRow[]> {
-  const sb = await supabaseServer();
-  const { data } = await sb
-    .from("logs")
-    .select("*")
-    .order("created_at", { ascending: false })
-    .limit(limit);
-  return data ?? [];
+  try {
+    const sb = await supabaseServer();
+    const { data } = await sb
+      .from("logs")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(limit);
+    return data ?? [];
+  } catch (e) {
+    console.error("getRecentLogs error:", e);
+    return [];
+  }
 }
 
 // Aggregate counts for the Command Center home page.
 export async function getDashboardStats() {
-  const sb = await supabaseServer();
-  const [agents, missions, tasks, opportunities, approvals, memories, logs] =
-    await Promise.all([
-      sb.from("agent_control").select("status"),
-      sb.from("missions").select("status, progress"),
-      sb.from("tasks").select("status"),
-      sb.from("opportunities").select("status"),
-      sb.from("approvals").select("status"),
-      sb.from("memory").select("id"),
-      sb.from("logs").select("level").limit(200),
-    ]);
+  try {
+    const sb = await supabaseServer();
+    const [agents, missions, tasks, opportunities, approvals, memories, logs] =
+      await Promise.all([
+        sb.from("agent_control").select("status"),
+        sb.from("missions").select("status, progress"),
+        sb.from("tasks").select("status"),
+        sb.from("opportunities").select("status"),
+        sb.from("approvals").select("status"),
+        sb.from("memory").select("id"),
+        sb.from("logs").select("level").limit(200),
+      ]);
 
-  const countBy = (rows: { status?: string }[] | null, key: string) =>
-    rows?.filter((r) => r.status === key).length ?? 0;
+    const countBy = (rows: { status?: string }[] | null | undefined, key: string) =>
+      Array.isArray(rows) ? rows.filter((r) => r && r.status === key).length : 0;
 
-  return {
-    agentsRunning: countBy(agents.data as { status: string }[], "running"),
-    agentsError: countBy(agents.data as { status: string }[], "error"),
-    agentsTotal: agents.data?.length ?? 0,
-    missionsActive: countBy(missions.data as { status: string }[], "in_progress"),
-    missionsPlanning: countBy(missions.data as { status: string }[], "planning"),
-    missionsTotal: missions.data?.length ?? 0,
-    tasksPending: countBy(tasks.data as { status: string }[], "pending"),
-    tasksRunning: countBy(tasks.data as { status: string }[], "running"),
-    tasksWaiting: countBy(tasks.data as { status: string }[], "waiting_approval"),
-    tasksCompleted: countBy(tasks.data as { status: string }[], "completed"),
-    tasksFailed: countBy(tasks.data as { status: string }[], "failed"),
-    tasksTotal: tasks.data?.length ?? 0,
-    opportunitiesNew: countBy(opportunities.data as { status: string }[], "new"),
-    approvalsPending: countBy(approvals.data as { status: string }[], "pending"),
-    memories: memories.data?.length ?? 0,
-    logsErrors:
-      (logs.data as { level: string }[])?.filter((r) => r.level === "error").length ?? 0,
-    logsWarn:
-      (logs.data as { level: string }[])?.filter((r) => r.level === "warn").length ?? 0,
-  };
+    return {
+      agentsRunning: countBy(agents.data as any, "running"),
+      agentsError: countBy(agents.data as any, "error"),
+      agentsTotal: agents.data?.length ?? 0,
+      missionsActive: countBy(missions.data as any, "in_progress"),
+      missionsPlanning: countBy(missions.data as any, "planning"),
+      missionsTotal: missions.data?.length ?? 0,
+      tasksPending: countBy(tasks.data as any, "pending"),
+      tasksRunning: countBy(tasks.data as any, "running"),
+      tasksWaiting: countBy(tasks.data as any, "waiting_approval"),
+      tasksCompleted: countBy(tasks.data as any, "completed"),
+      tasksFailed: countBy(tasks.data as any, "failed"),
+      tasksTotal: tasks.data?.length ?? 0,
+      opportunitiesNew: countBy(opportunities.data as any, "new"),
+      approvalsPending: countBy(approvals.data as any, "pending"),
+      memories: memories.data?.length ?? 0,
+      logsErrors:
+        Array.isArray(logs.data) ? logs.data.filter((r) => r && r.level === "error").length : 0,
+      logsWarn:
+        Array.isArray(logs.data) ? logs.data.filter((r) => r && r.level === "warn").length : 0,
+    };
+  } catch (err) {
+    console.error("Error fetching dashboard stats:", err);
+    return {
+      agentsRunning: 0,
+      agentsError: 0,
+      agentsTotal: 0,
+      missionsActive: 0,
+      missionsPlanning: 0,
+      missionsTotal: 0,
+      tasksPending: 0,
+      tasksRunning: 0,
+      tasksWaiting: 0,
+      tasksCompleted: 0,
+      tasksFailed: 0,
+      tasksTotal: 0,
+      opportunitiesNew: 0,
+      approvalsPending: 0,
+      memories: 0,
+      logsErrors: 0,
+      logsWarn: 0,
+    };
+  }
 }
 
 // Context bundle the AI Assistant reasoning inspector pulls from.
 export async function getAssistantContext() {
-  const [agents, missions, memories] = await Promise.all([
-    getAgents(),
-    getMissions(),
-    getMemories(),
-  ]);
-  const activeMission =
-    missions.find((m) => m.status === "in_progress") ?? missions[0] ?? null;
-  return { agents, activeMission, topMemories: memories.slice(0, 5) };
+  try {
+    const [agents, missions, memories] = await Promise.all([
+      getAgents(),
+      getMissions(),
+      getMemories(),
+    ]);
+    const activeMission =
+      missions.find((m) => m.status === "in_progress") ?? missions[0] ?? null;
+    return { agents, activeMission, topMemories: memories.slice(0, 5) };
+  } catch (e) {
+    console.error("getAssistantContext error:", e);
+    return { agents: [], activeMission: null, topMemories: [] };
+  }
 }
