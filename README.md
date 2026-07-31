@@ -1,36 +1,62 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AutoGrow OS — Mission Control Center
 
-## Getting Started
+Personal autonomous-agency dashboard. Next.js (App Router) + Supabase + Tailwind v4.
+Dark glassmorphism UI, live realtime updates, 14 pages, drag-and-drop task board,
+Groq-powered AI assistant, content studio with SEO scoring.
 
-First, run the development server:
+## Quick start
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000 → redirected to `/login`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 1. Create your auth user
+First visit: use **Create account** on `/login` (email + password ≥ 6 chars).
+RLS then grants full access to the single authenticated owner.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 2. Apply the database schema
+Open your Supabase project → **SQL Editor** → paste the contents of
+[`supabase/schema.sql`](./supabase/schema.sql) → **Run**.
 
-## Learn More
+Idempotent (`IF NOT EXISTS` + `ON CONFLICT`), safe to re-run. Creates all 11 tables,
+enables RLS, adds Realtime publication, seeds 6 agents + sample data.
 
-To learn more about Next.js, take a look at the following resources:
+### 3. Environment
+`.env.local` is pre-filled (gitignored). See `.env.example` for the key list.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Architecture
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Layer | Tech |
+|---|---|
+| Frontend | Next.js App Router, React 19, Tailwind v4 |
+| DB + Auth + Realtime | Supabase Postgres, `@supabase/ssr` |
+| Kanban | `@hello-pangea/dnd` |
+| AI | Groq (Llama 3.3 70B) via `/api/chat` server route |
+| Icons | lucide-react |
 
-## Deploy on Vercel
+Three Supabase clients (split by trust boundary):
+- `lib/supabase/client.ts` — browser (RLS-scoped, realtime)
+- `lib/supabase/server.ts` — server components/actions (RLS-scoped)
+- `lib/supabase/service.ts` — service-role, route handlers only
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## What's live vs. stubbed
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Live (this build):** all 14 pages, Supabase CRUD + realtime, auth gate, Kanban
+drag-and-drop, AI Assistant (Groq), Content Studio (editor + preview + SEO score +
+seed from sample posts), Reports export, Memory/Research/SEO/Website reads.
+
+**Stubbed (need the AWS VPS engine — not part of this build):**
+- Agent **Run Now** + **cron execution** → `/api/trigger-agent` logs the intent and
+  relays to `VPS_WEBHOOK_URL` once set. Today it logs "engine_not_connected".
+- **GitHub PR creation** → marks draft `pr_created`; real PR needs octokit + repo.
+- **Server Monitor CPU/RAM/Disk** → requires the VPS worker to push metrics.
+- **Telegram bot** runtime → lives on the VPS.
+
+To wire the engine later: set `VPS_WEBHOOK_URL` + `VPS_WEBHOOK_SECRET` in `.env.local`.
+
+## Schema note
+The blueprint header said "14 tables" but its SQL defines 11. We implement the 11.
+Add more when the engine requires them.
