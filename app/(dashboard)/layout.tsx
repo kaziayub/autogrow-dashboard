@@ -4,6 +4,8 @@ import { TopBar } from "@/components/topbar";
 import { Realtime } from "@/components/realtime";
 import { supabaseServer } from "@/lib/supabase/server";
 
+export const dynamic = "force-dynamic";
+
 export default async function DashboardLayout({
   children,
 }: {
