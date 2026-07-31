@@ -2,12 +2,19 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
 // Auth gate: refresh session + redirect unauthenticated users to /login.
-export async function proxy(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const response = NextResponse.next({ request });
 
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    return response;
+  }
+
   const sb = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    supabaseUrl,
+    supabaseAnonKey,
     {
       cookies: {
         getAll: () => request.cookies.getAll(),
@@ -25,14 +32,18 @@ export async function proxy(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
   const isAuthRoute = pathname.startsWith("/login");
-  const isApiAuth = pathname.startsWith("/api/auth");
+  const isApiRoute = pathname.startsWith("/api/");
+
+  if (isApiRoute) {
+    return response;
+  }
 
   // Authed user hitting /login -> send to dashboard
   if (user && isAuthRoute) {
     return NextResponse.redirect(new URL("/", request.url));
   }
   // Unauthed user hitting protected route -> login
-  if (!user && !isAuthRoute && !isApiAuth) {
+  if (!user && !isAuthRoute) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
