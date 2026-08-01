@@ -259,3 +259,18 @@ export async function getAssistantContext() {
     return { agents: [], activeMission: null, topMemories: [] };
   }
 }
+
+// Server metrics pushed by VPS metrics-pusher.js every 30s
+export async function getServerMetrics() {
+  try {
+    const sb = supabaseService();
+    const { data } = await sb
+      .from("server_metrics")
+      .select("*")
+      .eq("id", 1)
+      .single();
+    return data ?? null;
+  } catch (e) {
+    return null;
+  }
+}
