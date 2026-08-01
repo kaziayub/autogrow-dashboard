@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { supabaseServer } from "@/lib/supabase/server";
+import { supabaseService } from "@/lib/supabase/service";
 
 const STATUSES = [
   "pending",
@@ -12,8 +12,7 @@ const STATUSES = [
 ] as const;
 
 export async function moveTask(taskId: string, status: string) {
-  if (!STATUSES.includes(status as (typeof STATUSES)[number])) return;
-  const sb = await supabaseServer();
+  const sb = supabaseService();
   await sb
     .from("tasks")
     .update({ status, updated_at: new Date().toISOString() })
@@ -24,17 +23,29 @@ export async function moveTask(taskId: string, status: string) {
 
 export async function createTask(formData: FormData) {
   const title = String(formData.get("title") ?? "").trim();
-  const agent_name = String(formData.get("agent_name") ?? "Executive");
+  const agent_name = String(formData.get("agent_name") ?? "executive").toLowerCase();
   const priority = String(formData.get("priority") ?? "medium");
   if (!title) return;
-  const sb = await supabaseServer();
-  await sb.from("tasks").insert({ title, agent_name, priority });
+
+  const sb = supabaseService();
+  const { error } = await sb.from("tasks").insert({
+    title,
+    agent_name,
+    agent_type: agent_name,
+    priority,
+    status: "pending"
+  });
+
+  if (error) {
+    console.error("Error creating task:", error.message);
+  }
+
   revalidatePath("/tasks");
   revalidatePath("/");
 }
 
 export async function deleteTask(taskId: string) {
-  const sb = await supabaseServer();
+  const sb = supabaseService();
   await sb.from("tasks").delete().eq("id", taskId);
   revalidatePath("/tasks");
   revalidatePath("/");

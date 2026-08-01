@@ -1,4 +1,4 @@
-import { supabaseServer } from "@/lib/supabase/server";
+import { supabaseService } from "@/lib/supabase/service";
 import type {
   AgentControl,
   Approval,
@@ -14,11 +14,11 @@ import type {
 } from "@/lib/types";
 
 // All server-side data access in one place. Server components call these.
-// Client realtime subscriptions live in components/realtime.tsx + logs-stream.tsx.
+// Uses supabaseService() for 100% reliable server-side data retrieval.
 
 export async function getAgents(): Promise<AgentControl[]> {
   try {
-    const sb = await supabaseServer();
+    const sb = supabaseService();
     const { data } = await sb.from("agent_control").select("*").order("agent_name");
     return data ?? [];
   } catch (e) {
@@ -29,12 +29,17 @@ export async function getAgents(): Promise<AgentControl[]> {
 
 export async function getMissions(): Promise<Mission[]> {
   try {
-    const sb = await supabaseServer();
+    const sb = supabaseService();
     const { data } = await sb
       .from("missions")
       .select("*")
       .order("created_at", { ascending: false });
-    return data ?? [];
+    
+    // Map goal to description if description is missing
+    return (data ?? []).map((m: any) => ({
+      ...m,
+      description: m.description || m.goal || ""
+    }));
   } catch (e) {
     console.error("getMissions error:", e);
     return [];
@@ -43,12 +48,17 @@ export async function getMissions(): Promise<Mission[]> {
 
 export async function getTasks(): Promise<Task[]> {
   try {
-    const sb = await supabaseServer();
+    const sb = supabaseService();
     const { data } = await sb
       .from("tasks")
       .select("*")
       .order("created_at", { ascending: false });
-    return data ?? [];
+    
+    // Map agent_type to agent if missing
+    return (data ?? []).map((t: any) => ({
+      ...t,
+      agent: t.agent || t.agent_type || "system"
+    }));
   } catch (e) {
     console.error("getTasks error:", e);
     return [];
@@ -57,7 +67,7 @@ export async function getTasks(): Promise<Task[]> {
 
 export async function getMemories(): Promise<Memory[]> {
   try {
-    const sb = await supabaseServer();
+    const sb = supabaseService();
     const { data } = await sb
       .from("memory")
       .select("*")
@@ -71,7 +81,7 @@ export async function getMemories(): Promise<Memory[]> {
 
 export async function getOpportunities(): Promise<Opportunity[]> {
   try {
-    const sb = await supabaseServer();
+    const sb = supabaseService();
     const { data } = await sb
       .from("opportunities")
       .select("*")
@@ -85,7 +95,7 @@ export async function getOpportunities(): Promise<Opportunity[]> {
 
 export async function getApprovals(): Promise<Approval[]> {
   try {
-    const sb = await supabaseServer();
+    const sb = supabaseService();
     const { data } = await sb
       .from("approvals")
       .select("*")
@@ -99,7 +109,7 @@ export async function getApprovals(): Promise<Approval[]> {
 
 export async function getSchedulerJobs(): Promise<SchedulerJob[]> {
   try {
-    const sb = await supabaseServer();
+    const sb = supabaseService();
     const { data } = await sb
       .from("scheduler")
       .select("*")
@@ -114,7 +124,7 @@ export async function getSchedulerJobs(): Promise<SchedulerJob[]> {
 
 export async function getSeoAudits(): Promise<SeoAudit[]> {
   try {
-    const sb = await supabaseServer();
+    const sb = supabaseService();
     const { data } = await sb
       .from("seo_audits")
       .select("*")
@@ -129,7 +139,7 @@ export async function getSeoAudits(): Promise<SeoAudit[]> {
 
 export async function getContentDrafts(): Promise<ContentDraft[]> {
   try {
-    const sb = await supabaseServer();
+    const sb = supabaseService();
     const { data } = await sb
       .from("content_drafts")
       .select("*")
@@ -143,7 +153,7 @@ export async function getContentDrafts(): Promise<ContentDraft[]> {
 
 export async function getResearchReports(): Promise<ResearchReport[]> {
   try {
-    const sb = await supabaseServer();
+    const sb = supabaseService();
     const { data } = await sb
       .from("research_reports")
       .select("*")
@@ -157,7 +167,7 @@ export async function getResearchReports(): Promise<ResearchReport[]> {
 
 export async function getRecentLogs(limit = 50): Promise<LogRow[]> {
   try {
-    const sb = await supabaseServer();
+    const sb = supabaseService();
     const { data } = await sb
       .from("logs")
       .select("*")
@@ -173,7 +183,7 @@ export async function getRecentLogs(limit = 50): Promise<LogRow[]> {
 // Aggregate counts for the Command Center home page.
 export async function getDashboardStats() {
   try {
-    const sb = await supabaseServer();
+    const sb = supabaseService();
     const [agents, missions, tasks, opportunities, approvals, memories, logs] =
       await Promise.all([
         sb.from("agent_control").select("status"),
@@ -185,24 +195,24 @@ export async function getDashboardStats() {
         sb.from("logs").select("level").limit(200),
       ]);
 
-    const countBy = (rows: { status?: string }[] | null | undefined, key: string) =>
-      Array.isArray(rows) ? rows.filter((r) => r && r.status === key).length : 0;
+    const countBy = (rows: { status?: string }[] | null | undefined, keys: string[]) =>
+      Array.isArray(rows) ? rows.filter((r) => r && r.status && keys.includes(r.status)).length : 0;
 
     return {
-      agentsRunning: countBy(agents.data as any, "running"),
-      agentsError: countBy(agents.data as any, "error"),
+      agentsRunning: countBy(agents.data as any, ["running", "active"]),
+      agentsError: countBy(agents.data as any, ["error"]),
       agentsTotal: agents.data?.length ?? 0,
-      missionsActive: countBy(missions.data as any, "in_progress"),
-      missionsPlanning: countBy(missions.data as any, "planning"),
+      missionsActive: countBy(missions.data as any, ["in_progress", "active"]),
+      missionsPlanning: countBy(missions.data as any, ["planning"]),
       missionsTotal: missions.data?.length ?? 0,
-      tasksPending: countBy(tasks.data as any, "pending"),
-      tasksRunning: countBy(tasks.data as any, "running"),
-      tasksWaiting: countBy(tasks.data as any, "waiting_approval"),
-      tasksCompleted: countBy(tasks.data as any, "completed"),
-      tasksFailed: countBy(tasks.data as any, "failed"),
+      tasksPending: countBy(tasks.data as any, ["pending", "todo"]),
+      tasksRunning: countBy(tasks.data as any, ["running", "in_progress"]),
+      tasksWaiting: countBy(tasks.data as any, ["waiting_approval"]),
+      tasksCompleted: countBy(tasks.data as any, ["completed", "done"]),
+      tasksFailed: countBy(tasks.data as any, ["failed"]),
       tasksTotal: tasks.data?.length ?? 0,
-      opportunitiesNew: countBy(opportunities.data as any, "new"),
-      approvalsPending: countBy(approvals.data as any, "pending"),
+      opportunitiesNew: countBy(opportunities.data as any, ["new"]),
+      approvalsPending: countBy(approvals.data as any, ["pending"]),
       memories: memories.data?.length ?? 0,
       logsErrors:
         Array.isArray(logs.data) ? logs.data.filter((r) => r && r.level === "error").length : 0,
@@ -242,7 +252,7 @@ export async function getAssistantContext() {
       getMemories(),
     ]);
     const activeMission =
-      missions.find((m) => m.status === "in_progress") ?? missions[0] ?? null;
+      missions.find((m) => m.status === "in_progress" || m.status === "active") ?? missions[0] ?? null;
     return { agents, activeMission, topMemories: memories.slice(0, 5) };
   } catch (e) {
     console.error("getAssistantContext error:", e);

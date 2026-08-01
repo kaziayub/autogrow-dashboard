@@ -11,7 +11,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "agent required" }, { status: 400 });
   }
 
-  const vpsUrl = process.env.VPS_WEBHOOK_URL;
+  const vpsUrl = process.env.VPS_WEBHOOK_URL || "http://63.180.69.67:3005/api/trigger-agent";
   const secret = process.env.VPS_WEBHOOK_SECRET;
 
   // 1. Mark agent as running (optimistic, UI feedback)

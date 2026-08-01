@@ -81,6 +81,7 @@ export default async function MissionsPage() {
               </div>
               <MissionActions
                 id={m.id}
+                title={m.title}
                 progress={m.progress}
                 status={m.status}
               />
