@@ -53,24 +53,38 @@ export async function deleteMission(id: string) {
 
 export async function runMissionAction(id: string, title: string) {
   const sb = supabaseService();
+
+  // 1. Mark mission as active
   await sb
     .from("missions")
     .update({ status: "active", updated_at: new Date().toISOString() })
     .eq("id", id);
 
-  try {
-    await fetch(VPS_WEBHOOK_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        agent_name: "Executive",
-        action: "run_mission",
-        payload: { mission_id: id, title }
-      })
-    });
-  } catch (err: any) {
-    console.warn("VPS Webhook trigger note:", err.message);
-  }
+  // 2. Write task to agent_tasks queue — VPS polls this every 10s
+  await sb.from("agent_tasks").insert({
+    agent_name: "Executive",
+    action: "run_mission",
+    payload: { mission_id: id, title },
+    status: "pending",
+    created_at: new Date().toISOString()
+  });
+
+  // 3. Log the trigger event
+  await sb.from("logs").insert({
+    agent: "Executive",
+    action: `Mission triggered: ${title}`,
+    level: "info",
+    details: { mission_id: id, title }
+  });
+
+  // 4. Also try VPS direct webhook as fallback (may timeout if port blocked)
+  const VPS_URL = process.env.VPS_WEBHOOK_URL || "http://63.180.69.67:3005/api/trigger-agent";
+  fetch(VPS_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ agent_name: "Executive", action: "run_mission", payload: { mission_id: id, title } }),
+    signal: AbortSignal.timeout(3000)
+  }).catch(() => {}); // fire-and-forget, don't block UI
 
   revalidatePath("/missions");
   revalidatePath("/");
