@@ -14,7 +14,7 @@ export type Mission = {
   id: string;
   title: string;
   description: string | null;
-  status: "planning" | "in_progress" | "completed" | "paused";
+  status: "planning" | "in_progress" | "completed" | "paused" | "active";
   progress: number;
   created_at: string;
   updated_at: string;
