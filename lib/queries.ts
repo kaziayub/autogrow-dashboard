@@ -275,13 +275,15 @@ export async function getServerMetrics() {
   }
 }
 
-// Daily AI News Digests pushed by VPS agent or created manually
+// Daily AI News Digests pushed by VPS agent — shows only last 15 days
 export async function getAiNews(limit = 20): Promise<import("@/lib/types").AiNewsItem[]> {
   try {
     const sb = supabaseService();
+    const fifteenDaysAgo = new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString();
     const { data } = await sb
       .from("ai_news")
       .select("*")
+      .gte("created_at", fifteenDaysAgo)
       .order("created_at", { ascending: false })
       .limit(limit);
     return data ?? [];
