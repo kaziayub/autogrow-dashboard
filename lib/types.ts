@@ -114,6 +114,15 @@ export type LogRow = {
   created_at: string;
 };
 
+export type AiNewsItem = {
+  id: string;
+  title: string;
+  summary: string;
+  category: string;
+  source_url?: string | null;
+  created_at: string;
+};
+
 export const TABLES = {
   agentControl: "agent_control",
   missions: "missions",
@@ -126,4 +135,6 @@ export const TABLES = {
   contentDrafts: "content_drafts",
   researchReports: "research_reports",
   logs: "logs",
+  aiNews: "ai_news",
 } as const;
+

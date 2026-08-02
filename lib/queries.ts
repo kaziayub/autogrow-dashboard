@@ -274,3 +274,20 @@ export async function getServerMetrics() {
     return null;
   }
 }
+
+// Daily AI News Digests pushed by VPS agent or created manually
+export async function getAiNews(limit = 20): Promise<import("@/lib/types").AiNewsItem[]> {
+  try {
+    const sb = supabaseService();
+    const { data } = await sb
+      .from("ai_news")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(limit);
+    return data ?? [];
+  } catch (e) {
+    console.error("getAiNews error:", e);
+    return [];
+  }
+}
+

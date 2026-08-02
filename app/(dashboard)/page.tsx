@@ -1,6 +1,6 @@
 import { PageHeader, Stat, Card, Badge, Progress } from "@/components/ui";
 import { StatusBadge } from "@/components/status-badge";
-import { getDashboardStats, getRecentLogs, getAgents } from "@/lib/queries";
+import { getDashboardStats, getRecentLogs, getAgents, getAiNews } from "@/lib/queries";
 import {
   Cpu,
   Target,
@@ -10,6 +10,8 @@ import {
   CheckCircle2,
   Zap,
   Activity,
+  Newspaper,
+  ExternalLink,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -22,10 +24,11 @@ function timeAgo(iso: string) {
 }
 
 export default async function CommandCenter() {
-  const [stats, logs, agents] = await Promise.all([
+  const [stats, logs, agents, aiNews] = await Promise.all([
     getDashboardStats(),
     getRecentLogs(8),
     getAgents(),
+    getAiNews(5),
   ]);
 
   return (
@@ -134,6 +137,40 @@ export default async function CommandCenter() {
           </div>
         </Card>
       </div>
+
+      {/* Daily AI News Digest Card */}
+      <Card className="mt-4">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <Newspaper className="h-4 w-4 text-accent" />
+            <h3 className="text-sm font-semibold">Daily Agency AI Digest (Auto-Updated at 8:00 AM)</h3>
+          </div>
+          <Badge tone="blue">Daily 8:00 AM Cron Active</Badge>
+        </div>
+        {aiNews.length === 0 ? (
+          <p className="text-xs text-text-muted">No news digests posted yet. The VPS agent will auto-update every morning at 8:00 AM.</p>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {aiNews.map((news) => (
+              <div key={news.id} className="rounded-lg bg-black/20 border border-border-soft p-3 text-xs">
+                <div className="flex items-center justify-between gap-2 mb-1">
+                  <span className="font-medium text-text text-sm truncate">{news.title}</span>
+                  <Badge tone="amber">{news.category || "AI Update"}</Badge>
+                </div>
+                <p className="text-text-muted leading-relaxed mb-2">{news.summary}</p>
+                <div className="flex items-center justify-between text-[10px] text-text-muted/60">
+                  <span>{timeAgo(news.created_at)}</span>
+                  {news.source_url && (
+                    <a href={news.source_url} target="_blank" rel="noreferrer" className="flex items-center gap-1 text-accent hover:underline">
+                      Source <ExternalLink className="h-2.5 w-2.5" />
+                    </a>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </Card>
 
       {/* Recent activity */}
       <Card className="mt-4">
