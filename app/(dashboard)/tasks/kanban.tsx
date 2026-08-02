@@ -68,7 +68,16 @@ export function Kanban({ tasks }: { tasks: Task[] }) {
                             }`}
                           >
                             <div className="flex items-start justify-between gap-2">
-                              <span className={`h-2 w-2 rounded-full mt-1.5 shrink-0 ${PRIORITY_DOT[t.priority]}`} />
+                              <span
+                                className={`h-2 w-2 rounded-full mt-1.5 shrink-0 ${
+                                  t.status === "completed"
+                                    ? "bg-ok"
+                                    : t.status === "failed"
+                                    ? "bg-danger"
+                                    : PRIORITY_DOT[t.priority] || "bg-warn"
+                                }`}
+                                title={t.status === "completed" ? "Completed" : `Priority: ${t.priority}`}
+                              />
                               <p className="text-xs flex-1 leading-snug">{t.title}</p>
                               <button
                                 onClick={() => {
