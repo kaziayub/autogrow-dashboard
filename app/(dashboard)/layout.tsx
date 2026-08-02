@@ -1,8 +1,7 @@
-import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import { Sidebar } from "@/components/sidebar";
 import { TopBar } from "@/components/topbar";
 import { Realtime } from "@/components/realtime";
-import { supabaseServer } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
@@ -11,17 +10,16 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const sb = await supabaseServer();
-  const {
-    data: { user },
-  } = await sb.auth.getUser();
-  if (!user) redirect("/login");
+  // Middleware already handles auth gating & session verification.
+  // We read the cookie store to extract owner email without making a duplicate external HTTP round-trip.
+  const cookieStore = await cookies();
+  const ownerEmail = cookieStore.get("sb-owner-email")?.value || "Ayub";
 
   return (
     <div className="flex min-h-screen">
       <Sidebar />
       <div className="flex-1 min-w-0 flex flex-col">
-        <TopBar ownerName={user.email ?? undefined} />
+        <TopBar ownerName={ownerEmail} />
         <main className="flex-1 p-4 lg:p-6 max-w-[1600px] w-full mx-auto fade-up">
           {children}
         </main>

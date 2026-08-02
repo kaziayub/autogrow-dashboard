@@ -92,11 +92,12 @@ export function TopBar({ ownerName }: { ownerName?: string }) {
                   <Link
                     key={item.href}
                     href={item.href}
+                    prefetch={true}
                     onClick={() => setOpen(false)}
                     className={cn(
-                      "flex items-center gap-3 px-3 py-2 rounded-lg text-sm",
+                      "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all active:scale-[0.98]",
                       active
-                        ? "bg-accent/15 text-accent"
+                        ? "bg-accent/15 text-accent font-medium"
                         : "text-text-muted hover:text-text hover:bg-white/5"
                     )}
                   >
