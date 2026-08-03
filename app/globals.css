@@ -139,13 +139,27 @@ body {
   text-shadow: 0 0 8px rgba(0, 240, 255, 0.8), 0 0 2px rgba(0, 240, 255, 0.3);
 }
 
+@keyframes cyber-sweep {
+  0% { background-position: 250% 0; }
+  100% { background-position: -150% 0; }
+}
+
 /* Cyber card borders with corner brackets */
 .cyber-card {
   position: relative;
-  background: rgba(1, 10, 8, 0.7);
+  background: linear-gradient(
+    115deg,
+    rgba(1, 10, 8, 0.75) 0%,
+    rgba(1, 10, 8, 0.75) 43%,
+    rgba(0, 255, 102, 0.09) 50%,
+    rgba(1, 10, 8, 0.75) 57%,
+    rgba(1, 10, 8, 0.75) 100%
+  );
+  background-size: 300% 100%;
+  animation: cyber-sweep 14s ease-in-out infinite;
   border: 1px solid rgba(0, 255, 102, 0.25);
   border-radius: 6px;
-  box-shadow: 0 0 10px rgba(0, 255, 102, 0.05), inset 0 0 10px rgba(0, 255, 102, 0.05);
+  box-shadow: 0 0 15px rgba(0, 255, 102, 0.04), inset 0 0 10px rgba(0, 255, 102, 0.05);
 }
 
 .cyber-card::before, .cyber-card::after {
@@ -196,9 +210,10 @@ body {
   z-index: 9999;
   background: linear-gradient(
     rgba(18, 16, 16, 0) 50%, 
-    rgba(0, 0, 0, 0.2) 50%
+    rgba(0, 0, 0, 0.06) 50%
   );
   background-size: 100% 4px;
+  opacity: 0.75;
 }
 
 /* Blinking terminal cursor */
@@ -245,4 +260,29 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(0, 255, 102, 0.6);
   box-shadow: 0 0 8px rgba(0, 255, 102, 0.8);
+}
+
+/* Glitch displacement animations on hover */
+@keyframes cyber-glitch {
+  0% { transform: translate(0); }
+  20% { transform: translate(-1.5px, 1.5px); }
+  40% { transform: translate(-1.5px, -1.5px); }
+  60% { transform: translate(1.5px, 1.5px); }
+  80% { transform: translate(1.5px, -1.5px); }
+  100% { transform: translate(0); }
+}
+.cyber-glitch-hover:hover {
+  animation: cyber-glitch 0.2s linear;
+}
+
+/* Pulse keyframes for glowing borders */
+@keyframes neon-border-pulse {
+  0%, 100% { border-color: rgba(0, 255, 102, 0.25); }
+  50% { border-color: rgba(0, 255, 102, 0.65); box-shadow: 0 0 15px rgba(0, 255, 102, 0.08), inset 0 0 12px rgba(0, 255, 102, 0.08); }
+}
+.cyber-card {
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.cyber-card:hover {
+  animation: neon-border-pulse 2s ease-in-out infinite;
 }

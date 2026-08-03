@@ -31,19 +31,19 @@ export function Button({
 } & React.ButtonHTMLAttributes<HTMLButtonElement>) {
   const variants: Record<string, string> = {
     default:
-      "bg-white/5 hover:bg-white/10 text-text border border-border-soft",
+      "bg-black/40 text-[#4e8267] border border-[#00ff66]/20 hover:text-[#00ff66] hover:border-[#00ff66]/40 hover:bg-[#00ff66]/5",
     primary:
-      "bg-accent text-bg font-semibold hover:brightness-110 border border-transparent",
-    ghost: "hover:bg-white/5 text-text-muted hover:text-text border border-transparent",
+      "bg-[#00ff66]/15 text-[#00ff66] font-mono border border-[#00ff66]/50 hover:bg-[#00ff66]/25 hover:shadow-[0_0_15px_rgba(0,255,102,0.3)] cyber-glow",
+    ghost: "hover:bg-[#00ff66]/5 text-[#4e8267] hover:text-[#00ff66] border border-transparent",
     outline:
-      "bg-transparent hover:bg-white/5 text-text border border-border-strong",
+      "bg-transparent hover:bg-[#00ff66]/10 text-[#00ff66] border border-[#00ff66]/30 hover:border-[#00ff66]/60",
     danger:
-      "bg-danger/15 text-danger hover:bg-danger/25 border border-danger/30",
+      "bg-red-950/15 text-red-400 hover:bg-red-950/25 border border-red-500/30 hover:shadow-[0_0_12px_rgba(239,68,68,0.2)]",
   };
   return (
     <button
       className={cn(
-        "inline-flex items-center justify-center gap-2 rounded-lg transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed",
+        "inline-flex items-center justify-center gap-2 rounded font-mono transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.97]",
         size === "sm" ? "px-2.5 py-1.5 text-xs" : "px-4 py-2 text-sm",
         variants[variant],
         className
@@ -205,13 +205,25 @@ export function PageHeader({
 
 // Progress bar (0-100)
 export function Progress({ value }: { value: number }) {
-  const v = Math.max(0, Math.min(100, value));
+  const totalSegments = 10;
+  const filledSegments = Math.round((Math.max(0, Math.min(100, value)) / 100) * totalSegments);
+  
   return (
-    <div className="h-1.5 w-full rounded-full bg-white/8 overflow-hidden">
-      <div
-        className="h-full rounded-full bg-gradient-to-r from-accent to-accent-2 transition-all"
-        style={{ width: `${v}%` }}
-      />
+    <div className="flex gap-1 w-full">
+      {Array.from({ length: totalSegments }).map((_, i) => {
+        const active = i < filledSegments;
+        return (
+          <div
+            key={i}
+            className={cn(
+              "h-2 flex-1 transition-all duration-300 rounded-[1px]",
+              active
+                ? "bg-[#00ff66] shadow-[0_0_8px_rgba(0,255,102,0.8)] border border-[#00ff66]/30"
+                : "bg-white/5 border border-white/5"
+            )}
+          />
+        );
+      })}
     </div>
   );
 }
