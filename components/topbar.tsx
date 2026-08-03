@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { NAV } from "@/lib/nav";
 import { cn } from "@/lib/cn";
-import { Bell, Menu, Rocket, Search, X } from "lucide-react";
+import { Bell, Menu, Rocket, Search, X, Zap, Shield, ChevronDown } from "lucide-react";
 
 export function TopBar({ ownerName }: { ownerName?: string }) {
   const pathname = usePathname();
@@ -15,45 +15,46 @@ export function TopBar({ ownerName }: { ownerName?: string }) {
   );
 
   return (
-    <header className="sticky top-0 z-30 glass-strong border-b border-border-soft px-4 lg:px-6 py-3 flex items-center justify-between gap-4">
-      <div className="flex items-center gap-3 min-w-0">
+    <header className="sticky top-0 z-30 bg-black/40 border border-[#00ff66]/30 px-4 lg:px-6 py-3 flex items-center justify-between gap-4 mx-4 lg:mx-6 mt-4 rounded-lg shadow-[0_0_15px_rgba(0,255,102,0.05)]">
+      <div className="flex items-center gap-4 min-w-0">
         {/* Mobile nav trigger */}
         <button
-          className="lg:hidden p-2 -ml-1 rounded-lg hover:bg-white/5"
+          className="lg:hidden p-2 -ml-1 rounded-lg hover:bg-white/5 text-[#00ff66]"
           onClick={() => setOpen(true)}
           aria-label="Open menu"
         >
           <Menu className="h-5 w-5" />
         </button>
-        <div className="lg:hidden flex items-center gap-2">
-          <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-accent to-accent-2 flex items-center justify-center">
-            <Rocket className="h-4 w-4 text-bg" />
-          </div>
+        
+        <div className="flex items-center gap-2.5">
+          <Zap className="h-5 w-5 text-[#00ff66] cyber-glow animate-pulse" />
+          <span className="font-mono text-base font-bold tracking-wider text-[#00ff66] cyber-glow">
+            AutoGrow OS
+          </span>
+          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-[#00ff66]/10 border border-[#00ff66]/30 text-[10px] font-bold text-[#00ff66] uppercase tracking-widest">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#00ff66] animate-ping" />
+            LIVE
+          </span>
         </div>
-        <h2 className="text-sm font-semibold truncate">
-          {current?.label ?? "Mission Control"}
-        </h2>
       </div>
 
-      <div className="flex items-center gap-2">
-        <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-black/30 border border-border-soft text-text-muted text-xs w-56">
-          <Search className="h-3.5 w-3.5" />
-          <span className="text-text-muted/70">Search…</span>
+      <div className="flex items-center gap-4">
+        {/* System Status: NOMINAL */}
+        <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded border border-[#00ff66]/30 bg-[#00ff66]/5 text-xs text-[#00ff66] font-mono tracking-wider font-semibold">
+          <Shield className="h-4 w-4" />
+          SYSTEM STATUS: <span className="cyber-glow">NOMINAL</span>
         </div>
-        <button
-          className="relative p-2 rounded-lg hover:bg-white/5 text-text-muted"
-          aria-label="Notifications"
-        >
-          <Bell className="h-4.5 w-4.5" />
-          <span className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-accent" />
-        </button>
-        <div className="flex items-center gap-2 pl-2 ml-1 border-l border-border-soft">
-          <div className="h-8 w-8 rounded-full bg-gradient-to-br from-accent to-accent-2 flex items-center justify-center text-bg font-bold text-xs">
+
+        {/* Profile Operator info */}
+        <div className="flex items-center gap-2 pl-4 border-l border-[#00ff66]/20">
+          <div className="h-8 w-8 rounded-full border border-[#00ff66]/40 bg-[#00ff66]/10 flex items-center justify-center text-[#00ff66] font-bold text-xs">
             {(ownerName ?? "A").charAt(0).toUpperCase()}
           </div>
-          <div className="hidden sm:block leading-tight">
-            <div className="text-xs font-medium">{ownerName ?? "Ayub"}</div>
-            <div className="text-[10px] text-text-muted">Owner</div>
+          <div className="hidden sm:block leading-tight font-mono text-left">
+            <div className="text-xs font-semibold text-[#00ff66]">{ownerName ?? "Ayub"}</div>
+            <div className="text-[10px] text-[#00ff66]/70 flex items-center gap-1">
+              Operator <ChevronDown className="h-3 w-3" />
+            </div>
           </div>
         </div>
       </div>

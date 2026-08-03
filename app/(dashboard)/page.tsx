@@ -12,6 +12,9 @@ import {
   Activity,
   Newspaper,
   ExternalLink,
+  User,
+  ClipboardList,
+  ShieldCheck,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -31,6 +34,8 @@ export default async function CommandCenter() {
     getAiNews(5),
   ]);
 
+  const hasSystemError = stats.agentsError > 0 || stats.logsErrors > 0;
+
   return (
     <div>
       <PageHeader
@@ -42,32 +47,32 @@ export default async function CommandCenter() {
       {/* Metric cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <Stat
-          label="Active Agents"
+          label="ACTIVE AGENTS"
           value={`${stats.agentsRunning}/${stats.agentsTotal}`}
-          icon={<Cpu className="h-4 w-4" />}
+          icon={<User className="h-4.5 w-4.5" />}
           tone={stats.agentsError > 0 ? "red" : "green"}
-          hint={stats.agentsError > 0 ? `${stats.agentsError} in error` : "All systems nominal"}
+          hint={stats.agentsError > 0 ? `${stats.agentsError} in error` : "All agents online"}
         />
         <Stat
-          label="Active Missions"
+          label="ACTIVE MISSIONS"
           value={stats.missionsActive}
-          icon={<Target className="h-4 w-4" />}
+          icon={<Target className="h-4.5 w-4.5" />}
           tone="blue"
           hint={`${stats.missionsPlanning} in planning`}
         />
         <Stat
-          label="Open Tasks"
+          label="OPEN TASKS"
           value={stats.tasksTotal}
-          icon={<KanbanSquare className="h-4 w-4" />}
+          icon={<ClipboardList className="h-4.5 w-4.5" />}
           tone={stats.tasksFailed > 0 ? "amber" : "neutral"}
           hint={`${stats.tasksWaiting} awaiting approval`}
         />
         <Stat
-          label="Alerts"
-          value={stats.logsErrors + stats.logsWarn}
-          icon={<AlertTriangle className="h-4 w-4" />}
-          tone={stats.logsErrors > 0 ? "red" : "neutral"}
-          hint={`${stats.logsErrors} errors · ${stats.logsWarn} warnings`}
+          label="SYSTEM STATUS"
+          value={hasSystemError ? "WARNING" : "NOMINAL"}
+          icon={<Activity className="h-4.5 w-4.5 animate-pulse" />}
+          tone={hasSystemError ? "red" : "green"}
+          hint={hasSystemError ? "Error detected in logs" : "All systems normal"}
         />
       </div>
 
@@ -172,33 +177,69 @@ export default async function CommandCenter() {
         )}
       </Card>
 
-      {/* Recent activity */}
-      <Card className="mt-4">
-        <h3 className="text-sm font-semibold mb-4">Recent Activity</h3>
-        {logs.length === 0 ? (
-          <p className="text-sm text-text-muted">No activity yet.</p>
-        ) : (
-          <div className="space-y-2">
-            {logs.map((log) => (
-              <div
-                key={log.id}
-                className="flex items-center gap-3 text-sm py-1.5 border-b border-border-soft/50 last:border-0"
-              >
-                <Badge
-                  tone={log.level === "error" ? "red" : log.level === "warn" ? "amber" : "blue"}
-                >
-                  {log.agent}
-                </Badge>
-                <span className="text-text-muted font-mono text-xs flex-1 truncate">
-                  {log.action}
-                </span>
-                <span className="text-[10px] text-text-muted/60">
-                  {timeAgo(log.created_at)}
-                </span>
-              </div>
-            ))}
+      {/* Recent activity terminal */}
+      <Card className="mt-6 border border-[#00ff66]/40 bg-black/80 relative overflow-hidden rounded-lg shadow-[0_0_20px_rgba(0,255,102,0.08)]">
+        {/* Terminal Header */}
+        <div className="flex items-center justify-between border-b border-[#00ff66]/20 bg-black/60 px-4 py-2.5 -mx-5 -mt-5 mb-4">
+          <div className="flex items-center gap-1.5">
+            <span className="h-2.5 w-2.5 rounded-full bg-red-500/70" />
+            <span className="h-2.5 w-2.5 rounded-full bg-yellow-500/70" />
+            <span className="h-2.5 w-2.5 rounded-full bg-green-500/70" />
           </div>
-        )}
+          <div className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#00ff66]/80 cyber-glow">
+            RECENT ACTIVITY
+          </div>
+          <div className="w-10" /> {/* Spacer */}
+        </div>
+
+        {/* Scanlines overlay inside terminal */}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent to-black/10 opacity-30" />
+
+        {/* Terminal screen */}
+        <div className="space-y-2.5 min-h-[220px] max-h-[350px] overflow-y-auto font-mono text-[11px] leading-relaxed text-[#00ff66] custom-scrollbar text-left">
+          {/* Initial boot sequence logs to match screenshot */}
+          <div className="text-[#00ff66]/40 flex gap-2">
+            <span>[00:00:01]</span>
+            <span className="text-[#00ff66]/60">[INIT]</span>
+            <span>AutoGrow OS boot sequence initiated... success</span>
+          </div>
+          <div className="text-[#00ff66]/40 flex gap-2">
+            <span>[00:00:02]</span>
+            <span className="text-[#00ff66]/60">[CORE]</span>
+            <span>System kernel loaded. All modules operational.</span>
+          </div>
+
+          {/* Database active logs */}
+          {logs.map((log) => {
+            const date = new Date(log.created_at);
+            const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+            
+            let colorClass = "text-[#00ff66]/80";
+            if (log.level === "error") colorClass = "text-red-500 font-bold cyber-glow";
+            if (log.level === "warn") colorClass = "text-yellow-500 font-semibold";
+
+            return (
+              <div key={log.id} className="flex items-start gap-2">
+                <span className="text-[#00ff66]/40">[{timeStr}]</span>
+                <span className="text-[#00ff66]/60 uppercase">[{log.agent}]</span>
+                <span className={colorClass}>{log.action}</span>
+                <span className="text-[#00ff66]/30">... success</span>
+              </div>
+            );
+          })}
+
+          {/* Awaiting next command blinking prompt */}
+          <div className="flex items-center gap-2 pt-1 border-t border-[#00ff66]/10 text-[#00ff66]">
+            <span className="text-[#00ff66]/40">
+              [{new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })}]
+            </span>
+            <span className="text-[#00ff66]/60">[IDLE]</span>
+            <span>
+              System is idle. Awaiting next command...
+              <span className="cyber-cursor" />
+            </span>
+          </div>
+        </div>
       </Card>
     </div>
   );

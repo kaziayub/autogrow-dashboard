@@ -11,7 +11,9 @@ export function Card({
   strong?: boolean;
 }) {
   return (
-    <div className={cn(strong ? "glass-strong" : "glass", "p-5", className)}>
+    <div className={cn("cyber-card p-5 relative overflow-hidden", className)}>
+      <div className="cyber-decor-tr" />
+      <div className="cyber-decor-bl" />
       {children}
     </div>
   );
@@ -126,23 +128,28 @@ export function Stat({
   tone?: "neutral" | "green" | "blue" | "amber" | "red";
   hint?: string;
 }) {
-  const accent: Record<string, string> = {
-    neutral: "text-text",
-    green: "text-ok",
-    blue: "text-accent-2",
-    amber: "text-warn",
-    red: "text-danger",
-  };
   return (
-    <Card className="flex flex-col gap-2">
-      <div className="flex items-center justify-between text-text-muted">
-        <span className="text-xs uppercase tracking-wide">{label}</span>
-        {icon && <span className="opacity-70">{icon}</span>}
-      </div>
-      <div className={cn("text-3xl font-semibold tabular-nums", accent[tone])}>
+    <Card className="flex flex-col items-center justify-center gap-2.5 py-6 font-mono text-center">
+      {icon && <div className="text-[#00ff66]/70 mb-0.5">{icon}</div>}
+      <span className="text-[10px] font-bold uppercase tracking-widest text-[#00ff66]/70">
+        {label}
+      </span>
+      <div className="text-4xl font-extrabold text-[#00ff66] cyber-glow tracking-tight tabular-nums">
         {value}
       </div>
-      {hint && <div className="text-xs text-text-muted">{hint}</div>}
+      
+      {/* Decorative horizontal dots/line as seen in screenshot */}
+      <div className="flex items-center gap-1.5 w-16 opacity-50 mt-1">
+        <div className="h-[1px] flex-1 bg-[#00ff66]/30" />
+        <div className="h-1 w-1 rounded-full bg-[#00ff66]" />
+        <div className="h-[1px] flex-1 bg-[#00ff66]/30" />
+      </div>
+
+      {hint && (
+        <div className="text-[9px] text-[#4e8267]/80 uppercase tracking-wider mt-1">
+          {hint}
+        </div>
+      )}
     </Card>
   );
 }
