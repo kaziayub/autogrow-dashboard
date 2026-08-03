@@ -123,31 +123,16 @@ export function Badge({
   );
 }
 
-/* ──────────────────────────────────────────────────
-   Input
-────────────────────────────────────────────────── */
 export function Input({
   className,
   ...props
 }: React.InputHTMLAttributes<HTMLInputElement>) {
   return (
     <input
-      className={cn("w-full px-3 py-2 text-xs font-mono transition", className)}
-      style={{
-        background: 'rgba(0,229,255,0.03)',
-        border: '1px solid rgba(0,229,255,0.14)',
-        borderRadius: '2px',
-        color: '#ccd6f6',
-        outline: 'none',
-      }}
-      onFocus={(e) => {
-        e.currentTarget.style.borderColor = 'rgba(0,229,255,0.40)';
-        e.currentTarget.style.boxShadow = '0 0 0 1px rgba(0,229,255,0.10)';
-      }}
-      onBlur={(e) => {
-        e.currentTarget.style.borderColor = 'rgba(0,229,255,0.14)';
-        e.currentTarget.style.boxShadow = 'none';
-      }}
+      className={cn(
+        "w-full px-3 py-2 text-xs font-mono transition bg-[#00e5ff]/[0.03] border border-[#00e5ff]/14 rounded-[2px] text-[#ccd6f6] placeholder:text-slate-600 outline-none focus:border-[#00e5ff]/40 focus:ring-1 focus:ring-[#00e5ff]/10",
+        className
+      )}
       {...props}
     />
   );
@@ -162,14 +147,10 @@ export function Textarea({
 }: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
   return (
     <textarea
-      className={cn("w-full px-3 py-2 text-xs font-mono transition resize-y min-h-[120px]", className)}
-      style={{
-        background: 'rgba(0,229,255,0.03)',
-        border: '1px solid rgba(0,229,255,0.14)',
-        borderRadius: '2px',
-        color: '#ccd6f6',
-        outline: 'none',
-      }}
+      className={cn(
+        "w-full px-3 py-2 text-xs font-mono transition resize-y min-h-[120px] bg-[#00e5ff]/[0.03] border border-[#00e5ff]/14 rounded-[2px] text-[#ccd6f6] placeholder:text-slate-600 outline-none focus:border-[#00e5ff]/40 focus:ring-1 focus:ring-[#00e5ff]/10",
+        className
+      )}
       {...props}
     />
   );
