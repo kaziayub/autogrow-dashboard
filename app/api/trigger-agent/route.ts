@@ -20,34 +20,36 @@ export async function POST(request: Request) {
     .update({ status: "running", current_task: "manual_run", updated_at: new Date().toISOString() })
     .eq("agent_name", agent);
 
-  // 2. Relay to VPS engine if connected
-  if (vpsUrl) {
-    try {
-      const res = await fetch(vpsUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(secret ? { "x-webhook-secret": secret } : {}),
-        },
-        body: JSON.stringify({ agent, source: "dashboard" }),
-        signal: AbortSignal.timeout(8000),
+  // 2. Queue in database (Agent Tasks) for the VPS to pick up
+  try {
+    const { error: queueError } = await supabaseService()
+      .from("agent_tasks")
+      .insert({
+        agent_name: agent,
+        action: agent === "SEO & Site Auditor" ? "run_seo_audit" : "run_mission",
+        payload: { title: `Manual Run of ${agent} from Dashboard`, url: "https://zynovari.com" },
+        status: "pending",
+        created_at: new Date().toISOString(),
       });
-      await supabaseService().from("logs").insert({
-        agent,
-        action: "manual_run.relayed",
-        level: "info",
-        details: { status: res.status },
-      });
-      return NextResponse.json({ ok: true, relayed: true, status: res.status });
-    } catch (err) {
-      await supabaseService().from("logs").insert({
-        agent,
-        action: "manual_run.relay_failed",
-        level: "error",
-        details: { error: String(err) },
-      });
-      return NextResponse.json({ ok: false, error: "relay_failed" }, { status: 502 });
-    }
+
+    if (queueError) throw queueError;
+
+    await supabaseService().from("logs").insert({
+      agent,
+      action: "manual_run.queued",
+      level: "info",
+      details: { note: "Successfully queued task in database for VPS poller" },
+    });
+
+    return NextResponse.json({ ok: true, queued: true });
+  } catch (err) {
+    await supabaseService().from("logs").insert({
+      agent,
+      action: "manual_run.queue_failed",
+      level: "error",
+      details: { error: String(err) },
+    });
+    return NextResponse.json({ ok: false, error: "queue_failed" }, { status: 500 });
   }
 
   // 3. No engine yet — log intent + revert to idle
