@@ -26,13 +26,25 @@ export default async function MissionsPage() {
             name="title"
             placeholder="Mission title"
             required
-            className="md:col-span-4"
+            className="md:col-span-3"
           />
           <Input
             name="description"
             placeholder="Short description"
-            className="md:col-span-5"
+            className="md:col-span-4"
           />
+          <select
+            name="agent_name"
+            defaultValue="Executive"
+            className="md:col-span-2 rounded-lg bg-black/30 border border-border-soft px-3 py-2 text-sm text-text focus:outline-none focus:border-accent/60"
+          >
+            <option value="Executive">Executive Agent</option>
+            <option value="SEO & Site Auditor">SEO & Site Auditor</option>
+            <option value="Content Studio">Content Studio</option>
+            <option value="Website">Website Crawler</option>
+            <option value="Research">Research Agent</option>
+            <option value="Scheduler">Scheduler Agent</option>
+          </select>
           <select
             name="status"
             defaultValue="planning"
@@ -70,6 +82,11 @@ export default async function MissionsPage() {
                       {m.description}
                     </p>
                   )}
+                  <div className="flex items-center gap-2 mt-2">
+                    <span className="text-[10px] font-medium bg-accent/10 text-accent px-2 py-0.5 rounded-full">
+                      🤖 Agent: {m.agent_name || "Executive"}
+                    </span>
+                  </div>
                 </div>
                 <StatusBadge status={m.status} />
               </div>
