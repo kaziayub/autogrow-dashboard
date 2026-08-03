@@ -16,6 +16,7 @@ export type Mission = {
   description: string | null;
   status: "planning" | "in_progress" | "completed" | "paused" | "active";
   progress: number;
+  agent_name?: string | null;
   created_at: string;
   updated_at: string;
 };
