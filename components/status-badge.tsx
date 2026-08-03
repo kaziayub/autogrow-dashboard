@@ -36,7 +36,8 @@ export function StatusBadge({ status }: { status: string }) {
   const label = STATUS_LABEL[status] ?? status.charAt(0).toUpperCase() + status.slice(1);
   const dot =
     status === "running" ? (
-      <span className="h-1.5 w-1.5 rounded-full bg-ok pulse-dot" />
+      <span className="h-1.5 w-1.5 rounded-full pulse-dot"
+        style={{ background: '#00ff9d', boxShadow: '0 0 5px rgba(0,255,157,0.8)' }} />
     ) : null;
   return (
     <Badge tone={tone}>

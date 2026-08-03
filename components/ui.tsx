@@ -1,6 +1,9 @@
 import { cn } from "@/lib/cn";
 import type { ReactNode } from "react";
 
+/* ──────────────────────────────────────────────────
+   Card — angled clip-path sci-fi surface
+────────────────────────────────────────────────── */
 export function Card({
   children,
   className,
@@ -19,6 +22,9 @@ export function Card({
   );
 }
 
+/* ──────────────────────────────────────────────────
+   Button
+────────────────────────────────────────────────── */
 export function Button({
   children,
   variant = "default",
@@ -29,25 +35,57 @@ export function Button({
   variant?: "default" | "primary" | "ghost" | "danger" | "outline";
   size?: "sm" | "md";
 } & React.ButtonHTMLAttributes<HTMLButtonElement>) {
-  const variants: Record<string, string> = {
-    default:
-      "bg-black/40 text-[#4e8267] border border-[#00ff66]/20 hover:text-[#00ff66] hover:border-[#00ff66]/40 hover:bg-[#00ff66]/5",
-    primary:
-      "bg-[#00ff66]/15 text-[#00ff66] font-mono border border-[#00ff66]/50 hover:bg-[#00ff66]/25 hover:shadow-[0_0_15px_rgba(0,255,102,0.3)] cyber-glow",
-    ghost: "hover:bg-[#00ff66]/5 text-[#4e8267] hover:text-[#00ff66] border border-transparent",
-    outline:
-      "bg-transparent hover:bg-[#00ff66]/10 text-[#00ff66] border border-[#00ff66]/30 hover:border-[#00ff66]/60",
-    danger:
-      "bg-red-950/15 text-red-400 hover:bg-red-950/25 border border-red-500/30 hover:shadow-[0_0_12px_rgba(239,68,68,0.2)]",
+  const base =
+    "inline-flex items-center justify-center gap-2 font-mono text-xs uppercase tracking-wider transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.97]";
+  const sizes = { sm: "px-3 py-1.5", md: "px-4 py-2" };
+
+  const variants: Record<string, React.CSSProperties> = {
+    default: {},
+    primary: {},
+    ghost: {},
+    outline: {},
+    danger: {},
   };
+
+  // We use inline styles for the clip-path button shape
+  const variantStyle: Record<string, React.CSSProperties> = {
+    default: {
+      background: 'rgba(0,229,255,0.04)',
+      color: 'rgba(204,214,246,0.7)',
+      border: '1px solid rgba(0,229,255,0.12)',
+      borderRadius: '2px',
+    },
+    primary: {
+      background: 'rgba(0,229,255,0.10)',
+      color: '#00e5ff',
+      border: '1px solid rgba(0,229,255,0.35)',
+      borderRadius: '2px',
+      textShadow: '0 0 8px rgba(0,229,255,0.5)',
+    },
+    ghost: {
+      background: 'transparent',
+      color: 'rgba(100,116,139,0.9)',
+      border: '1px solid transparent',
+      borderRadius: '2px',
+    },
+    outline: {
+      background: 'transparent',
+      color: '#00e5ff',
+      border: '1px solid rgba(0,229,255,0.28)',
+      borderRadius: '2px',
+    },
+    danger: {
+      background: 'rgba(239,68,68,0.08)',
+      color: '#f87171',
+      border: '1px solid rgba(239,68,68,0.25)',
+      borderRadius: '2px',
+    },
+  };
+
   return (
     <button
-      className={cn(
-        "inline-flex items-center justify-center gap-2 rounded font-mono transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.97]",
-        size === "sm" ? "px-2.5 py-1.5 text-xs" : "px-4 py-2 text-sm",
-        variants[variant],
-        className
-      )}
+      className={cn(base, sizes[size], className)}
+      style={variantStyle[variant]}
       {...props}
     >
       {children}
@@ -55,6 +93,9 @@ export function Button({
   );
 }
 
+/* ──────────────────────────────────────────────────
+   Badge
+────────────────────────────────────────────────── */
 export function Badge({
   children,
   tone = "neutral",
@@ -64,57 +105,79 @@ export function Badge({
   tone?: "neutral" | "green" | "blue" | "amber" | "red" | "violet";
   className?: string;
 }) {
-  const tones: Record<string, string> = {
-    neutral: "bg-white/8 text-text-muted border-border-soft",
-    green: "bg-ok/15 text-ok border-ok/30",
-    blue: "bg-accent-2/15 text-accent-2 border-accent-2/30",
-    amber: "bg-warn/15 text-warn border-warn/30",
-    red: "bg-danger/15 text-danger border-danger/30",
-    violet: "bg-violet-500/15 text-violet-300 border-violet-500/30",
+  const styles: Record<string, React.CSSProperties> = {
+    neutral: { background: 'rgba(255,255,255,0.05)', color: '#64748b', border: '1px solid rgba(255,255,255,0.08)' },
+    green:   { background: 'rgba(0,255,157,0.08)',  color: '#00ff9d', border: '1px solid rgba(0,255,157,0.25)', textShadow: '0 0 6px rgba(0,255,157,0.5)' },
+    blue:    { background: 'rgba(0,229,255,0.08)',  color: '#00e5ff', border: '1px solid rgba(0,229,255,0.25)', textShadow: '0 0 6px rgba(0,229,255,0.5)' },
+    amber:   { background: 'rgba(245,158,11,0.08)', color: '#fbbf24', border: '1px solid rgba(245,158,11,0.25)' },
+    red:     { background: 'rgba(239,68,68,0.08)',  color: '#f87171', border: '1px solid rgba(239,68,68,0.25)' },
+    violet:  { background: 'rgba(124,58,237,0.10)', color: '#a78bfa', border: '1px solid rgba(124,58,237,0.28)' },
   };
   return (
     <span
-      className={cn(
-        "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-medium border whitespace-nowrap",
-        tones[tone],
-        className
-      )}
+      className={cn("inline-flex items-center gap-1.5 px-2 py-0.5 text-[10px] font-mono font-semibold uppercase tracking-wider whitespace-nowrap", className)}
+      style={{ ...styles[tone], borderRadius: '2px' }}
     >
       {children}
     </span>
   );
 }
 
+/* ──────────────────────────────────────────────────
+   Input
+────────────────────────────────────────────────── */
 export function Input({
   className,
   ...props
 }: React.InputHTMLAttributes<HTMLInputElement>) {
   return (
     <input
-      className={cn(
-        "w-full rounded-lg bg-black/30 border border-border-soft px-3 py-2 text-sm text-text placeholder:text-text-muted/60 focus:outline-none focus:border-accent/60 focus:ring-2 focus:ring-accent/20 transition",
-        className
-      )}
+      className={cn("w-full px-3 py-2 text-xs font-mono transition", className)}
+      style={{
+        background: 'rgba(0,229,255,0.03)',
+        border: '1px solid rgba(0,229,255,0.14)',
+        borderRadius: '2px',
+        color: '#ccd6f6',
+        outline: 'none',
+      }}
+      onFocus={(e) => {
+        e.currentTarget.style.borderColor = 'rgba(0,229,255,0.40)';
+        e.currentTarget.style.boxShadow = '0 0 0 1px rgba(0,229,255,0.10)';
+      }}
+      onBlur={(e) => {
+        e.currentTarget.style.borderColor = 'rgba(0,229,255,0.14)';
+        e.currentTarget.style.boxShadow = 'none';
+      }}
       {...props}
     />
   );
 }
 
+/* ──────────────────────────────────────────────────
+   Textarea
+────────────────────────────────────────────────── */
 export function Textarea({
   className,
   ...props
 }: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
   return (
     <textarea
-      className={cn(
-        "w-full rounded-lg bg-black/30 border border-border-soft px-3 py-2 text-sm text-text placeholder:text-text-muted/60 focus:outline-none focus:border-accent/60 focus:ring-2 focus:ring-accent/20 transition resize-y min-h-[120px] font-mono",
-        className
-      )}
+      className={cn("w-full px-3 py-2 text-xs font-mono transition resize-y min-h-[120px]", className)}
+      style={{
+        background: 'rgba(0,229,255,0.03)',
+        border: '1px solid rgba(0,229,255,0.14)',
+        borderRadius: '2px',
+        color: '#ccd6f6',
+        outline: 'none',
+      }}
       {...props}
     />
   );
 }
 
+/* ──────────────────────────────────────────────────
+   Stat card — HUD readout
+────────────────────────────────────────────────── */
 export function Stat({
   label,
   value,
@@ -128,25 +191,51 @@ export function Stat({
   tone?: "neutral" | "green" | "blue" | "amber" | "red";
   hint?: string;
 }) {
+  const valueColor: Record<string, string> = {
+    neutral: '#00e5ff',
+    green: '#00ff9d',
+    blue: '#00e5ff',
+    amber: '#fbbf24',
+    red: '#f87171',
+  };
+  const glowColor: Record<string, string> = {
+    neutral: 'rgba(0,229,255,0.7)',
+    green: 'rgba(0,255,157,0.7)',
+    blue: 'rgba(0,229,255,0.7)',
+    amber: 'rgba(251,191,36,0.6)',
+    red: 'rgba(248,113,113,0.6)',
+  };
+
   return (
-    <Card className="flex flex-col items-center justify-center gap-2.5 py-6 font-mono text-center">
-      {icon && <div className="text-[#00ff66]/70 mb-0.5">{icon}</div>}
-      <span className="text-[10px] font-bold uppercase tracking-widest text-[#00ff66]/70">
+    <Card className="flex flex-col items-center justify-center gap-2 py-6 text-center">
+      {icon && (
+        <div style={{ color: 'rgba(0,229,255,0.35)' }} className="mb-0.5">
+          {icon}
+        </div>
+      )}
+      <span className="text-[9px] font-mono font-bold uppercase tracking-[0.2em]"
+        style={{ color: 'rgba(204,214,246,0.45)' }}>
         {label}
       </span>
-      <div className="text-4xl font-extrabold text-[#00ff66] cyber-glow tracking-tight tabular-nums">
+
+      {/* Big glowing number */}
+      <div className="text-4xl font-bold font-mono tracking-tight tabular-nums data-live"
+        style={{
+          color: valueColor[tone],
+          textShadow: `0 0 20px ${glowColor[tone]}, 0 0 6px ${glowColor[tone]}`,
+        }}>
         {value}
       </div>
-      
-      {/* Decorative horizontal dots/line as seen in screenshot */}
-      <div className="flex items-center gap-1.5 w-16 opacity-50 mt-1">
-        <div className="h-[1px] flex-1 bg-[#00ff66]/30" />
-        <div className="h-1 w-1 rounded-full bg-[#00ff66]" />
-        <div className="h-[1px] flex-1 bg-[#00ff66]/30" />
-      </div>
+
+      {/* Thin cyan divider */}
+      <div className="w-10 mt-0.5" style={{
+        height: '1px',
+        background: 'linear-gradient(90deg, transparent, rgba(0,229,255,0.4), transparent)'
+      }} />
 
       {hint && (
-        <div className="text-[9px] text-[#4e8267]/80 uppercase tracking-wider mt-1">
+        <div className="text-[9px] font-mono uppercase tracking-widest"
+          style={{ color: 'rgba(204,214,246,0.30)' }}>
           {hint}
         </div>
       )}
@@ -154,6 +243,9 @@ export function Stat({
   );
 }
 
+/* ──────────────────────────────────────────────────
+   EmptyState
+────────────────────────────────────────────────── */
 export function EmptyState({
   icon,
   title,
@@ -164,14 +256,23 @@ export function EmptyState({
   hint?: string;
 }) {
   return (
-    <div className="flex flex-col items-center justify-center text-center py-16 text-text-muted">
-      {icon && <div className="mb-3 opacity-50">{icon}</div>}
-      <p className="text-sm font-medium">{title}</p>
-      {hint && <p className="text-xs mt-1 max-w-sm">{hint}</p>}
+    <div className="flex flex-col items-center justify-center text-center py-16">
+      {icon && <div className="mb-3 opacity-30" style={{ color: '#00e5ff' }}>{icon}</div>}
+      <p className="text-sm font-mono uppercase tracking-wider" style={{ color: 'rgba(204,214,246,0.5)' }}>
+        {title}
+      </p>
+      {hint && (
+        <p className="text-xs mt-1 max-w-sm font-mono" style={{ color: 'rgba(204,214,246,0.25)' }}>
+          {hint}
+        </p>
+      )}
     </div>
   );
 }
 
+/* ──────────────────────────────────────────────────
+   PageHeader
+────────────────────────────────────────────────── */
 export function PageHeader({
   title,
   subtitle,
@@ -187,14 +288,25 @@ export function PageHeader({
     <div className="flex items-start justify-between gap-4 mb-6">
       <div className="flex items-center gap-3">
         {icon && (
-          <div className="h-10 w-10 rounded-xl glass flex items-center justify-center text-accent">
+          <div className="h-9 w-9 flex items-center justify-center"
+            style={{
+              background: 'rgba(0,229,255,0.06)',
+              border: '1px solid rgba(0,229,255,0.20)',
+              borderRadius: '2px',
+              color: '#00e5ff',
+            }}>
             {icon}
           </div>
         )}
         <div>
-          <h1 className="text-xl font-semibold tracking-tight">{title}</h1>
+          <h1 className="text-base font-bold font-mono uppercase tracking-widest"
+            style={{ color: '#e8f0ff' }}>
+            {title}
+          </h1>
           {subtitle && (
-            <p className="text-sm text-text-muted mt-0.5">{subtitle}</p>
+            <p className="text-[11px] font-mono mt-0.5" style={{ color: 'rgba(204,214,246,0.40)' }}>
+              {subtitle}
+            </p>
           )}
         </div>
       </div>
@@ -203,24 +315,34 @@ export function PageHeader({
   );
 }
 
-// Progress bar (0-100)
+/* ──────────────────────────────────────────────────
+   Progress — voltage / power readout bar
+────────────────────────────────────────────────── */
 export function Progress({ value }: { value: number }) {
-  const totalSegments = 10;
-  const filledSegments = Math.round((Math.max(0, Math.min(100, value)) / 100) * totalSegments);
-  
+  const total = 10;
+  const filled = Math.round((Math.max(0, Math.min(100, value)) / 100) * total);
   return (
-    <div className="flex gap-1 w-full">
-      {Array.from({ length: totalSegments }).map((_, i) => {
-        const active = i < filledSegments;
+    <div className="flex gap-[3px] w-full items-center">
+      {Array.from({ length: total }).map((_, i) => {
+        const active = i < filled;
+        const isEdge = active && i === filled - 1;
+        const isPast = active && i < filled - 1;
         return (
           <div
             key={i}
-            className={cn(
-              "h-2 flex-1 transition-all duration-300 rounded-[1px]",
-              active
-                ? "bg-[#00ff66] shadow-[0_0_8px_rgba(0,255,102,0.8)] border border-[#00ff66]/30"
-                : "bg-white/5 border border-white/5"
-            )}
+            className="flex-1 transition-all duration-300"
+            style={{
+              height: '3px',
+              borderRadius: '1px',
+              background: active
+                ? isEdge
+                  ? '#00e5ff'
+                  : 'rgba(0,229,255,0.55)'
+                : 'rgba(0,229,255,0.07)',
+              boxShadow: isEdge
+                ? '0 0 8px rgba(0,229,255,0.9), 0 0 2px rgba(0,229,255,0.5)'
+                : 'none',
+            }}
           />
         );
       })}
